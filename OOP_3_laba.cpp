@@ -9,7 +9,7 @@ public:
 	string str;
 	A() {
 		a = rand();
-		str = "elem: " + to_string(a);
+		str = to_string(a);
 	}
 	int get_a() {
 		return a;
@@ -28,16 +28,15 @@ class Container {
 	int capacity;
 	int size;
 
-	void increase_capacity(int sz) {
-		if (sz <= capacity) return;
-		T* new_arr = new T[sz];
-		capacity = sz;
+	void increase_capacity() {
+		T* new_arr = new T[capacity * 2];
 
-		for (int i = 0; i < sz; i++) {
+		for (int i = 0; i < size; i++) {
 			new_arr[i] = arr[i];
 		}
 
 		delete[] arr;
+		capacity *= 2;
 		arr = new_arr;
 	}
 
@@ -47,9 +46,9 @@ class Container {
 
 		for (int i = 0; i < size; i++) {
 			new_arr[i] = arr[i];
-		}
-		delete[] arr;
-		arr = new_arr;
+			delete[] arr;
+			arr = new_arr;
+		}	
 	}
 public: 
 	Container() :capacity(1), size(0) {
@@ -65,15 +64,15 @@ public:
 	}
 
 	void push_back(T val) {
-		if (size >= capacity) increase_capacity(2 * capacity);
+		if (size == capacity) increase_capacity();
 		arr[size] = val;
-		++size;
+		size++;
 	}
 
 	void pop_back() {
 		arr[size - 1] = 0;
-		--size;
-		reduce_capacity();
+		size--;
+		if (size == (capacity / 2)) reduce_capacity();
 	}
 
 	int search(T val) {
@@ -91,37 +90,47 @@ public:
 		}
 		arr[size - 1] = 0;
 		--size;
-		if (size == (capacity / 2)) {
-			reduce_capacity();
-		}
+		if (size == (capacity / 2)) reduce_capacity();
 	}
 
-	void insertAt(int index, T val)
+	void push(int index, T val)
 	{
-		if (size >= capacity) increase_capacity(2 * capacity);
+		if (size >= capacity) increase_capacity();
 
-		for (int i = size - 1; i >= index; i--) {
-			arr[i + 1] = arr[i];
+		if (index == capacity) push_back(val);
+		else {
+			for (int i = size - 1; i >= index; i--) {
+				arr[i + 1] = arr[i];
+			}
+
+			arr[index] = val;
+			++size;
 		}
-		arr[index] = val;
-		++size;
+		
 	}
 
-	 T set(int i, T val) {
-		if (i < 0 || i >= size) return NULL;
-		arr[i] = val;
+	 void set(int index, T val) {
+		 if (index <= size && index >= 0) 
+			 arr[index] = val;	 
 	}
 
-	T get(int i) const {
-		if (i < 0 || i >= size) return NULL;
-		return arr[i];
+	T get(int index) const {
+		if (index <= size && index >= 0) 
+			return arr[index];
+	}
+
+	void print() {
+		for (int i = 1; i < size; ++i) {
+			cout << *arr[i];
+			cout << '\n';
+		}
 	}
 };
 
 int main() {
 	Container<A*> arr;
 
-	for (int i = 0; i < 15; ++i) {
+	for (int i = 0; i < 150; ++i) {
 		arr.push_back(new A());
 	}
 
@@ -131,15 +140,36 @@ int main() {
 	}
 
 	arr.push_back(new A());
-	arr.remove(10);
-	arr.pop_back();
-	arr.get(4);
-	arr.set(4, new A());
-	arr.search(new A());
-	arr.insertAt(2, new A());
+	cout << "\n\n";
+	arr.print();
 
-	for (int i = 1; i < arr.get_size(); ++i) {
-		cout << *arr.get(i);
-		cout << '\n';
-	}
+	arr.remove(1);
+
+	cout << "\n\n";
+	arr.print();
+
+	arr.pop_back();
+
+	cout << "\n\n";
+	arr.print();
+
+	arr.get(4);
+
+	cout << "\n\n";
+	arr.print();
+
+	arr.set(4, new A());
+
+	cout << "\n\n";
+	arr.print();
+
+	arr.search(new A());
+
+	cout << "\n\n";
+	arr.print();
+
+	arr.push(2, new A());
+
+	cout << "\n\n";
+	arr.print();
 }

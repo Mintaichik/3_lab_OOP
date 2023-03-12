@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <string>
+#include <ctime>
 
 using namespace std;
 
@@ -18,13 +19,13 @@ public:
 		return str;
 	}
 };
-ostream& operator<<(ostream &os, const A &obj) {
-	return os << obj.str;
+ostream& operator<<(ostream &out, const A &elem) {
+	return out << elem.str;
 }
 
 template <typename T>
 class Container {
-	T* arr = NULL;
+	T* arr;
 	int capacity;
 	int size;
 
@@ -128,48 +129,49 @@ public:
 };
 
 int main() {
+	setlocale(LC_ALL, "rus");
 	Container<A*> arr;
-
-	for (int i = 0; i < 150; ++i) {
+	clock_t start = clock();
+	for (int i = 0; i < 10000; ++i) {
 		arr.push_back(new A());
 	}
-
-	for (int i = 1; i < arr.get_size(); ++i) {
-		cout << *arr.get(i);
-		cout << '\n';
+	for (int i = 0; i < 1000; ++i) {
+		switch (rand() % 8)
+		{
+		case 0:
+			arr.push_back(new A());
+			break;
+		case 1:
+			if (arr.get_size()) {
+				arr.remove(rand() % 10000);
+			}
+			break;
+		case 2:
+			if (arr.get_size()) {
+				arr.pop_back();
+			}
+			break;
+		case 3:
+			arr.get(rand() % 10000);
+			break;
+		case 5:
+			arr.set(rand() % 10000, new A());
+			break;
+		case 6:
+			arr.search((new A()));
+			break;
+		case 7:
+			arr.push(rand() % 10000, new A());
+			break;
+		}
+		
 	}
+	clock_t end = clock();
+	double seconds = (double)(end - start) / CLOCKS_PER_SEC;
 
-	arr.push_back(new A());
-	cout << "\n\n";
 	arr.print();
 
-	arr.remove(1);
-
-	cout << "\n\n";
-	arr.print();
-
-	arr.pop_back();
-
-	cout << "\n\n";
-	arr.print();
-
-	arr.get(4);
-
-	cout << "\n\n";
-	arr.print();
-
-	arr.set(4, new A());
-
-	cout << "\n\n";
-	arr.print();
-
-	arr.search(new A());
-
-	cout << "\n\n";
-	arr.print();
-
-	arr.push(2, new A());
-
-	cout << "\n\n";
-	arr.print();
+	cout << endl;
+	cout << "Время работы - " << seconds << "секунд";
+	
 }
